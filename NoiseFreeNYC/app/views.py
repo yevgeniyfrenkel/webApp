@@ -25,7 +25,7 @@ fileObject.close()
 
 #connect to 311 database
 conn = lite.connect('311sample.db')
-aNYC=[]
+aNYC = []
 
 
 
@@ -53,28 +53,28 @@ def cities_output(PD=[],conn=conn, kde=bKDE,gkey=googleKey):
   #convert address into the long, lat format
   gmaps = googlemaps.Client(key=gkey)
   geocode_result = gmaps.geocode(address=city,components={'locality': 'New York','country': 'US'})
-  lat=geocode_result[0]['geometry']['location']['lat']
-  lng=geocode_result[0]['geometry']['location']['lng']
-  zipcode=10007
+  lat = geocode_result[0]['geometry']['location']['lat']
+  lng = geocode_result[0]['geometry']['location']['lng']
+  zipcode = 10007
 
   for e in geocode_result[0]['address_components']:
-    if e['types']==[u'postal_code']:
-        zipcode=int(e['long_name'])
-  if type(zipcode)!=type(1):
-        zipcode=10007
+    if e['types'] == [u'postal_code']:
+        zipcode = int(e['long_name'])
+  if type(zipcode) != type(1):
+        zipcode = 10007
   
   #connect to complaints datable ans pull all the complaints close ot the entered location
   conn = lite.connect('311sample.db')
   c = conn.cursor()
   c.execute("SELECT  count(*) FROM complains where ((Latitude-%f)*(Latitude-%f)+(Longitude+%f)*(Longitude+%f))<0.00003" %(lat,lat,-lng,-lng))
   lsum = c.fetchall()
-  lsum=lsum[0][0]
+  lsum = lsum[0][0]
   c.execute("SELECT Descriptor, 100*count(Descriptor)/(%d), count(Descriptor)/52, color FROM complains where ((Latitude-%f)*(Latitude-%f)+(Longitude+%f)*(Longitude+%f))<0.00003 Group by Descriptor Order by  count(Descriptor) DESC  limit 10" % (lsum,lat,lat,-lng,-lng))
 
-  color=-1
+  color = -1
   try:
     query_results = c.fetchall()
-    color=query_results[0][-1]
+    color = query_results[0][-1]
     print('compaint color')
     print(color)
   except:
@@ -86,7 +86,7 @@ def cities_output(PD=[],conn=conn, kde=bKDE,gkey=googleKey):
   c2.execute("SELECT  count(*) FROM complains where ((Latitude-%f)*(Latitude-%f)+(Longitude+%f)*(Longitude+%f))<0.0000005" %(lat,lat,-lng,-lng))
   clusterAlert = c2.fetchall()
   print(clusterAlert)
-  NCW=""
+  NCW = ""
     
   
    	
@@ -100,19 +100,19 @@ def cities_output(PD=[],conn=conn, kde=bKDE,gkey=googleKey):
     
   
   
-  z=kde.score_samples([lat,lng])  
+  z = kde.score_samples([lat,lng])
  #scaling constants 
-  zmin,zmax=(0.80528808829411425, 6.3302235941827032)
-  z=50.0*(1-(z-zmin)/(zmax-zmin))+50
-  z= np.min([z,100.0])
-  z= np.max([z,0])
-  the_result3=int(z) 
+  zmin,zmax = (0.80528808829411425, 6.3302235941827032)
+  z = 50.0 * ( 1-(z-zmin) / (zmax-zmin) ) + 50
+  z = np.min([z,100.0])
+  z = np.max([z,0])
+  the_result3 = int(z)
   #cluster warming
   NCW=' '
-  if(clusterAlert[0][0]!=0):
-    NCW=clusterwarning(color,the_result3)
+  if(clusterAlert[0][0] != 0):
+    NCW = clusterwarning(color,the_result3)
   else:
-    NCW=clusterwarning(-1,the_result3)
+    NCW = clusterwarning(-1,the_result3)
 
 
   

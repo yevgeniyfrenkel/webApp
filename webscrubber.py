@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib
-import csv
 import pandas as pd
-import numpy as np
 import googlemaps
 import sqlite3 as lite
 
@@ -35,7 +33,7 @@ def GoogleC(loc):
 
 
 def myGeocode(addr,gmaps):
-    geocode_result = gmaps.geocode(address=addr,components={'locality': 'New York','country': 'US'})
+    geocode_result = gmaps.geocode(address = addr,components = {'locality': 'New York','country': 'US'})
     lat=geocode_result[0]['geometry']['location']['lat']
     lng=geocode_result[0]['geometry']['location']['lng']
     return (lat,lng)
@@ -50,8 +48,10 @@ sqlq = "SELECT Distinct IncidentZip FROM complains "
 PDLIGHT = pd.read_sql_query(sqlq, conn)
 zips = PDLIGHT.values
 zips = zips[zips>100]
-
-gmaps = googlemaps.Client(key='')
+f = open('key.txt', 'r')
+myKey=f.readline()
+print(myKey)
+gmaps = googlemaps.Client(key=myKey)
 zipsGPS=[]
 for z in zips:
     temp = myGeocode(str(int(z)),gmaps)
@@ -59,10 +59,10 @@ for z in zips:
   
 #For each zip code, obtain 10 pages of listings and save to  PandaAPT
 template3 ='https://www.rentjungle.com/new-york-apartments-and-houses-for-rent/page:%d/cla:%f/clo:%f/'
-a=[]
+a = []
 pages = 10
 for z in zipsGPS:
-    count = count+1
+    count = count + 1
     for i in range(1,pages):
         link = template3%(i,z[0],z[1])
         try:
@@ -79,7 +79,7 @@ pda.to_csv("PandaAPT.csv")
 
 #Go through the listings and only keep unique(address) samples 
 PDA = pd.read_csv('PandaAPT.csv')
-PDA=PDA.values
+PDA = PDA.values
 p = []
 d = {}
 for e in PDA:
