@@ -3,6 +3,7 @@ import urllib
 import pandas as pd
 import googlemaps
 import sqlite3 as lite
+import pickle
 
 
 def processLink(soup,list):
