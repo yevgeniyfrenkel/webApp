@@ -8,7 +8,7 @@ def clusterwarning(color,score):
        temp = " Construction"
     if color == 2:
        temp = " Traffic"
-    if color==3:
+    if color == 3:
        temp = " Pet"
     output = "Warning: High"+temp+" noise"
     template = '<div id="content"> <p><b><span style="color:red" >%s </span><br>Location score = %d/100 <a href="#codeword">more info</a> </b>  </p></div>' %(output,score)
